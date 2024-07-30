@@ -1,0 +1,70 @@
+<?php
+
+class User
+{
+    public string $race = 'unknown';
+    private float $money = 0;
+    private DateTimeImmutable $createdAt;
+    public static int $userCount = 0;
+
+    private function __construct(private string $firstName, private string $lastName)
+    {
+        $this->createdAt = new DateTimeImmutable();
+        $this->validateName($this->firstName);
+        $this->validateName($this->lastName);
+        self::$userCount += 1; //self::$userCount = self::$userCount + 1;
+    }
+
+    public static function createBasic(string $firstName, string $lastName): static
+    {
+        // self - вызываем метод именно этого класса, static - вызываем метод текущего класса.
+        return new static($firstName, $lastName);
+    }
+
+    public static function createWithMoney(string $firstName, string $lastName, float $money): static
+    {
+        $entity = static::createBasic($firstName, $lastName);
+        $entity->money = $money;
+        return $entity;
+    }
+
+    public function fullName(): string
+    {
+        return "$this->firstName $this->lastName";
+    }
+
+    private function validateName(string $name): void
+    {
+        if (preg_match('/[0-9]+/', $name)){
+            throw new Exception('name has digit symbols');
+        }
+    }
+
+}
+
+class Manager extends User
+{
+
+}
+
+class Client extends User
+{
+
+}
+
+echo User::$userCount.PHP_EOL;
+$ivan = Manager::createBasic('ivan', 'peskov');
+echo get_class($ivan).PHP_EOL;
+echo $ivan::$userCount.PHP_EOL;
+$andrey = Client::createWithMoney('andrey', 'peskov', 150.40);
+echo get_class($andrey).PHP_EOL;
+echo User::$userCount.PHP_EOL;
+$andrey->race = 'asian';
+echo $ivan->fullName().PHP_EOL;
+echo $andrey->fullName().PHP_EOL;
+
+
+
+//$ivan->setMoney(102);
+//echo $ivan->getMoney().PHP_EOL;
+//var_dump($ivan);
